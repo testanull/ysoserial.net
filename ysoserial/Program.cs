@@ -39,7 +39,7 @@ namespace ysoserial
         static OptionSet options = new OptionSet()
             {
                 {"p|plugin=", "The plugin to be used.", v => plugin_name = v },
-                {"o|output=", "The output format (raw|base64). Default: raw", v => outputformat = v },
+                {"o|output=", "The output format (raw|base64|base64url). Default: raw", v => outputformat = v },
                 {"g|gadget=", "The gadget chain.", v => gadget_name = v },
                 {"f|formatter=", "The formatter.", v => formatter_name = v },
                 {"c|command=", "The command to be executed.", v => cmd = v },
@@ -297,7 +297,20 @@ namespace ysoserial
                 }
                 Console.WriteLine(b64encoded);
             }
-            else
+            else if (outputformat.ToLower().Equals("base64url"))
+            {
+                if (raw.GetType() == typeof(String))
+                {
+                    raw = Encoding.ASCII.GetBytes((String)raw);
+                }
+                    
+                string b64encoded = Base64Url.Base64Encode((byte[])raw);
+                if (showOutputLength)
+                {
+                    Console.WriteLine("Output length: " + b64encoded.Length + "\r\n");
+                }
+                Console.WriteLine(b64encoded);
+            } else
             {
                 MemoryStream data = new MemoryStream();
                 if (raw.GetType() == typeof(String))
